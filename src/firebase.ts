@@ -4,7 +4,9 @@ import firebaseConfig from '../firebase-applet-config.json';
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app, firebaseConfig.firestoreDatabaseId);
+// Use default database if firestoreDatabaseId is missing (Spark plan compatibility)
+const dbId = (firebaseConfig as any).firestoreDatabaseId;
+export const db = dbId ? getFirestore(app, dbId) : getFirestore(app);
 
 // Custom User Type
 export interface AppUser {
