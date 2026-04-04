@@ -7,7 +7,7 @@ if (!apiKey) {
 }
 const ai = new GoogleGenAI({ apiKey });
 
-export async function askQuestion(question: string) {
+export async function askQuestion(question: string, history: any[] = []) {
   if (!apiKey) {
     return "عذراً، مفتاح الذكاء الاصطناعي (API Key) غير معد بشكل صحيح في هذه النسخة. يرجى التواصل مع المطور.";
   }
@@ -45,12 +45,20 @@ export async function askQuestion(question: string) {
   `;
 
   try {
+    const chatHistory = history.map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }));
+
     const response = await ai.models.generateContent({
       model,
-      contents: question,
+      contents: [
+        ...chatHistory,
+        { role: 'user', parts: [{ text: question }] }
+      ],
       config: {
         systemInstruction,
-        temperature: 0.3, // Slightly higher for more natural pedagogical flow while remaining factual
+        temperature: 0.3,
       },
     });
 

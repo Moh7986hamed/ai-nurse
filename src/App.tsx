@@ -1,57 +1,36 @@
 import { useState, useEffect } from 'react';
 import ChatInterface from './components/ChatInterface';
-import Login from './components/Login';
-import PasswordChange from './components/PasswordChange';
 import { Loader2 } from 'lucide-react';
-import { AppUser, bootstrapAccounts, db } from './firebase';
-import { collection, query, where, getDocs, doc, getDoc } from 'firebase/firestore';
+import { AppUser } from './types';
 
 export default function App() {
-  const [user, setUser] = useState<AppUser | null>(null);
   const [isAuthChecking, setIsAuthChecking] = useState(true);
+
+  // Default user to bypass login
+  const defaultUser: AppUser = {
+    username: 'admin',
+    displayName: 'المطور الرئيسي',
+    role: 'admin',
+    status: 'active',
+    isDeveloper: true,
+    requiresPasswordChange: false,
+    createdAt: new Date(),
+    lastLogin: new Date(),
+  };
 
   useEffect(() => {
     const init = async () => {
-      // Bootstrap initial accounts if needed
-      await bootstrapAccounts();
-
-      // Check for existing session in localStorage
-      const savedUser = localStorage.getItem('app_user');
-      if (savedUser) {
-        try {
-          const parsedUser = JSON.parse(savedUser);
-          // Fetch latest data from Firestore to ensure sync
-          const userRef = doc(db, 'users', parsedUser.username);
-          const userSnap = await getDoc(userRef);
-          
-          if (userSnap.exists()) {
-            const latestData = userSnap.data() as AppUser;
-            setUser(latestData);
-            localStorage.setItem('app_user', JSON.stringify(latestData));
-          } else {
-            // User no longer exists in DB
-            localStorage.removeItem('app_user');
-            setUser(null);
-          }
-        } catch (e) {
-          console.error("Failed to parse or sync saved user", e);
-          localStorage.removeItem('app_user');
-        }
-      }
+      // Simulate initialization delay
+      await new Promise(resolve => setTimeout(resolve, 500));
       setIsAuthChecking(false);
     };
 
     init();
   }, []);
 
-  const handleLogin = (userData: AppUser) => {
-    setUser(userData);
-    localStorage.setItem('app_user', JSON.stringify(userData));
-  };
-
   const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem('app_user');
+    // In a no-login app, logout could just refresh
+    window.location.reload();
   };
 
   if (isAuthChecking) {
@@ -64,15 +43,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-slate-50">
-      {user ? (
-        user.requiresPasswordChange ? (
-          <PasswordChange user={user} onPasswordChanged={handleLogin} />
-        ) : (
-          <ChatInterface user={user} onLogout={handleLogout} />
-        )
-      ) : (
-        <Login onLoginSuccess={handleLogin} />
-      )}
+      <ChatInterface user={defaultUser} onLogout={handleLogout} />
     </div>
   );
 }
