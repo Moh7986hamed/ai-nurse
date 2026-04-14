@@ -1,17 +1,17 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { KNOWLEDGE_BASE } from "../data/knowledgeBase";
 
-const apiKey = "AIzaSyDfr2FiGIIPK-bnt8N6cw1x4K7Mm0Fr0pc"; // حط مفتاحك هنا بين العلامتين
-if (!apiKey) {
-  console.warn("GEMINI_API_KEY is missing. AI features will not work. Please set VITE_GEMINI_API_KEY in your environment variables.");
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || "AIzaSyDfr2FiGIIPK-bnt8N6cw1x4K7Mm0Fr0pc"; // يفضل استخدامه من متغيرات البيئة
+if (!apiKey || apiKey === "AIzaSyDfr2FiGIIPK-bnt8N6cw1x4K7Mm0Fr0pc") {
+  console.warn("تنبيه: مفتاح API قديم أو غير موجود. يرجى التأكد من ضبط VITE_GEMINI_API_KEY في Vercel.");
 }
-const ai = new GoogleGenAI({ apiKey });
+const ai = new GoogleGenAI(apiKey);
 
 export async function askQuestion(question: string, history: any[] = []) {
   if (!apiKey) {
     return "عذراً، مفتاح الذكاء الاصطناعي (API Key) غير معد بشكل صحيح في هذه النسخة. يرجى التواصل مع المطور.";
   }
-  const model = "gemini-3.1-pro-preview";
+  const model = "gemini-1.5-pro";
   
   const systemInstruction = `
     You are a world-class educational AI assistant specifically designed for Egyptian Nursing Students.
@@ -73,7 +73,7 @@ export async function summarizeCurriculumSection(subject: string, section: strin
   if (!apiKey) {
     return "عذراً، مفتاح الذكاء الاصطناعي غير متوفر.";
   }
-  const model = "gemini-3.1-pro-preview";
+  const model = "gemini-1.5-pro";
   
   const systemInstruction = `
     You are a world-class academic summarization expert for the Egyptian Nursing Curriculum.
@@ -115,7 +115,7 @@ export async function classifyConversation(firstMessage: string) {
   if (!apiKey) {
     return { category: "nursing_practical", title: "محادثة جديدة" };
   }
-  const model = "gemini-3-flash-preview";
+  const model = "gemini-1.5-flash";
   
   const systemInstruction = `
     You are a classification assistant for a nursing student app.
