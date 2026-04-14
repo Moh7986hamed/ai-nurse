@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { KNOWLEDGE_BASE } from "../data/knowledgeBase";
 
-const apiKey = "AIzaSyDiOSgCN1goBQS9ztQIJYygxVTOYP5BW_w"; // حط مفتاحك هنا بين العلامتين
+const apiKey = "AIzaSyDfr2FiGIIPK-bnt8N6cw1x4K7Mm0Fr0pc"; // حط مفتاحك هنا بين العلامتين
 if (!apiKey) {
   console.warn("GEMINI_API_KEY is missing. AI features will not work. Please set VITE_GEMINI_API_KEY in your environment variables.");
 }
